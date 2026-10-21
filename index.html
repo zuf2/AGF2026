@@ -104,11 +104,11 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:20px 8px 28
   </div>
 
   <section class="panel">
-    <h2>■ AGF2026 限定商品 ■ <span class="tag">※アフターでも販売予定</span></h2>
+    <h2>■ AGF2026 限定商品 ■ <span class="tag">※アフターでも販売予定</span><span class="tag">購入制限：各種3個まで</span><</h2>
     <div class="product-list" id="limited"></div>
   </section>
   <section class="panel">
-    <h2>■ オープン商品 ■</h2>
+    <h2>■ オープン商品 ■<span class="tag">購入制限：各種3個まで</span></h2>
     <div class="product-list" id="open"></div>
   </section>
   <section class="panel">
@@ -168,8 +168,8 @@ const yen = n => '¥'+Math.round(n).toLocaleString('ja-JP');
 function makeProduct(p, mode){
  const el=document.createElement('div'); el.className='product';
  const info=document.createElement('div');
- info.innerHTML=`<div class="product-name">${p.name}</div><span class="product-meta">${p.group==='trading'?'全'+(p.id==='t4'?'10':p.id==='t5'?'12':'14')+'種・単品／BOX選択可':(p.limit?'購入制限：各種3個まで':'')}</span>`;
- el.appendChild(info);
+info.innerHTML = `<div class="product-name">${p.name}</div>`;
+el.appendChild(info);
  const controls=document.createElement('div');controls.className='counter';
  const key=p.id+(mode==='single'?'-single':mode==='box'?'-box':'');
  const price=mode==='single'?p.price:mode==='box'?p.box:p.price;
