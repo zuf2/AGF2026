@@ -75,6 +75,19 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:20px 8px 28
 .footer-links a:hover,.footer-links button:hover{text-decoration:underline}
 .footer-author{margin:0;color:var(--muted)}
 @media(max-width:520px){.sticky-summary{margin-left:-9px;margin-right:-9px;padding:7px}.sticky-summary .metric{padding:7px 3px}.sticky-summary .metric .label{font-size:.68rem}.sticky-summary .bonus{padding:8px;font-size:.82rem}main{padding:0 9px 30px}.panel{padding:13px}.summary{gap:6px}.metric{padding:9px 4px}.product{grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:9px 7px}.counter{gap:4px}.counter button{width:30px;height:34px}.counter input{width:43px;height:34px}.product-name{font-size:.86rem}.price{font-size:.76rem}.actions button{flex:1}}
+
+.character-picker{margin-top:10px}
+.character-toggle{background:#e9f3fc;color:#2e679b;border:1px solid #b8d5ee;border-radius:8px;padding:7px 10px;font-size:.82rem}
+.character-options{display:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.character-options.open{display:grid}
+@media(max-width:700px){.character-options{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:480px){.character-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.character-option{border:1px solid var(--line);border-radius:8px;background:#f8fafc;padding:8px;min-width:0}
+.character-option-name{font-size:.82rem;font-weight:650;margin-bottom:6px;overflow-wrap:anywhere}
+.character-option .counter{gap:4px}
+.character-option .counter button{width:28px;height:30px;font-size:1rem}
+.character-option .counter input{width:38px;height:30px}
+
 </style>
 </head>
 <body>
@@ -104,11 +117,11 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:20px 8px 28
   </div>
 
   <section class="panel">
-    <h2>■ AGF2026 限定商品 ■ <span class="tag">※アフターでも販売予定</span><span class="tag">購入制限：各種3個まで</span></h2>
+    <h2>■ AGF2026 限定商品 ■ <span class="tag">※アフターでも販売予定</span></h2>
     <div class="product-list" id="limited"></div>
   </section>
   <section class="panel">
-    <h2>■ オープン商品 ■<span class="tag">購入制限：各種3個まで</span></h2>
+    <h2>■ オープン商品 ■</h2>
     <div class="product-list" id="open"></div>
   </section>
   <section class="panel">
@@ -119,7 +132,7 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:20px 8px 28
   <footer>
     <nav class="footer-links" aria-label="フッターメニュー">
       <button type="button" id="sharePage">シェア</button>
-      <a href="https://zuf2.github.io/main/">メインに戻る</a>
+      <a href="https://zuf2.github.io/agf2026/">メインに戻る</a>
     </nav>
     <p class="footer-author">作成者：<a href="https://x.com/zfu_2" target="_blank" rel="noopener noreferrer">@zfu_2</a></p>
   </footer>
@@ -159,17 +172,19 @@ const products = [
  {id:'t4',group:'trading',name:'【K】ダイヤ型アクリルブロック',price:900,box:9000,limit:3,boxLabel:'10種 BOX',code:'K'},
  {id:'t5',group:'trading',name:'【L】ミニアクリルブロックコレクション',price:800,box:9600,limit:3,boxLabel:'12種 BOX',code:'L'}
 ];
+const characters = ['八雲','エドモンド','オリビン','ケシー','玖夜','ガル','ブレイド','エンテン','レイ','リン','エスター','モルフィス','トパ','親父'];
 const qty = {};
 products.forEach(p=>{
   if(p.group==='trading'){qty[p.id+'-single']=0;qty[p.id+'-box']=0;}
+  else if(p.id==='o3'){characters.forEach((_,i)=>qty[p.id+'-'+(i+1)]=0);}
   else qty[p.id]=0;
 });
 const yen = n => '¥'+Math.round(n).toLocaleString('ja-JP');
 function makeProduct(p, mode){
  const el=document.createElement('div'); el.className='product';
  const info=document.createElement('div');
-info.innerHTML = `<div class="product-name">${p.name}</div>`;
-el.appendChild(info);
+ info.innerHTML=`<div class="product-name">${p.name}</div><span class="product-meta">${p.limit?'購入制限：各種3個まで':''}</span><span class="price">${yen(p.price)}</span>`;
+ el.appendChild(info);
  const controls=document.createElement('div');controls.className='counter';
  const key=p.id+(mode==='single'?'-single':mode==='box'?'-box':'');
  const price=mode==='single'?p.price:mode==='box'?p.box:p.price;
@@ -207,6 +222,33 @@ products.forEach(p=>{
       ctr.append(m,inp,pl);row.append(pr,ctr);choices.append(row);
    });
    top.appendChild(choices);target.appendChild(top);
+ } else if(p.id==='o3'){
+   const card=document.createElement('div');card.className='product';card.style.display='block';
+   const top=document.createElement('div');top.style.display='flex';top.style.alignItems='flex-start';top.style.justifyContent='space-between';top.style.gap='10px';
+   const info=document.createElement('div');
+   info.innerHTML=`<div class="product-name">${p.name}</div><span class="price">${yen(p.price)}／個</span><span class="product-meta">購入制限：各種3個まで</span>`;
+   const picker=document.createElement('div');picker.className='character-picker';
+   const toggle=document.createElement('button');toggle.type='button';toggle.className='character-toggle';toggle.textContent='キャラ別に選択 ▾';
+   toggle.setAttribute('aria-expanded','false');
+   const options=document.createElement('div');options.className='character-options';
+   characters.forEach((name,i)=>{
+     const key=p.id+'-'+(i+1);
+     const option=document.createElement('div');option.className='character-option';
+     const label=document.createElement('div');label.className='character-option-name';label.textContent=`G-${i+1}　${name}`;
+     const ctr=document.createElement('div');ctr.className='counter';
+     const minus=document.createElement('button');minus.type='button';minus.textContent='−';minus.setAttribute('aria-label',name+'を1減らす');
+     const input=document.createElement('input');input.type='number';input.min='0';input.max='3';input.step='1';input.inputMode='numeric';input.value=qty[key];input.setAttribute('aria-label',name+'の個数');
+     const plus=document.createElement('button');plus.type='button';plus.textContent='＋';plus.setAttribute('aria-label',name+'を1増やす');
+     function set(v){const n=Math.min(3,Math.max(0,Math.floor(Number(v)||0)));qty[key]=n;input.value=n;updateTotals();}
+     minus.addEventListener('click',()=>set(qty[key]-1));plus.addEventListener('click',()=>set(qty[key]+1));input.addEventListener('change',()=>set(input.value));
+     ctr.append(minus,input,plus);option.append(label,ctr);options.appendChild(option);
+   });
+   toggle.addEventListener('click',()=>{
+     const open=options.classList.toggle('open');
+     toggle.setAttribute('aria-expanded',String(open));
+     toggle.textContent=open?'キャラ別の選択を閉じる ▴':'キャラ別に選択 ▾';
+   });
+   picker.append(toggle,options);top.append(info,picker);card.appendChild(top);target.appendChild(card);
  } else target.appendChild(makeProduct(p));
 });
 function updateTotals(){
@@ -218,6 +260,11 @@ function updateTotals(){
      total+=s*p.price+b*p.box;count+=s+b;
      if(s) selected.push(`${p.name}（単品） × ${s}　${yen(s*p.price)}`);
      if(b) selected.push(`${p.name}（BOX） × ${b}　${yen(b*p.box)}`);
+   }else if(p.id==='o3'){
+     characters.forEach((name,i)=>{
+       const q=qty[p.id+'-'+(i+1)]||0;total+=q*p.price;count+=q;
+       if(q) selected.push(`${p.name}（${name}） × ${q}　${yen(q*p.price)}`);
+     });
    }else{
      const q=qty[p.id]||0;total+=q*p.price;count+=q;
      if(q) selected.push(`${p.name} × ${q}　${yen(q*p.price)}`);
@@ -243,6 +290,11 @@ function getSelectedRows(){
      const single=qty[p.id+'-single']||0, boxes=qty[p.id+'-box']||0;
      if(single)rows.push({key:p.id+'-single',name:p.name+'（単品）',code:p.code||'',qty:single,unitPrice:p.price,amount:single*p.price});
      if(boxes)rows.push({key:p.id+'-box',name:p.name+'（BOX）',code:p.code||'',qty:boxes,unitPrice:p.box,amount:boxes*p.box});
+   }else if(p.id==='o3'){
+     characters.forEach((name,i)=>{
+       const key=p.id+'-'+(i+1),q=qty[key]||0;
+       if(q)rows.push({key,name:p.name+'（'+name+'）',code:'G-'+(i+1),qty:q,unitPrice:p.price,amount:q*p.price});
+     });
    }else{
      const q=qty[p.id]||0;
      if(q)rows.push({key:p.id,name:p.name,code:p.code||p.codeRange||'',qty:q,unitPrice:p.price,amount:q*p.price});
@@ -312,14 +364,13 @@ async function saveImage(){
 }
 document.getElementById('saveImage').addEventListener('click',saveImage);
 document.getElementById('sharePage').addEventListener('click',()=>{
-   const text = document.title;
-   const url = location.href;
-   const shareUrl = 'https://twitter.com/intent/tweet?text='
-     + encodeURIComponent(text)
-     + '&url=' + encodeURIComponent(url);
+  const text = document.title;
+  const url = location.href;
+  const shareUrl = 'https://twitter.com/intent/tweet?text='
+    + encodeURIComponent(text)
+    + '&url=' + encodeURIComponent(url);
 
-   // ポップアップブロックを避けるため、同じタブでXの投稿画面を開く
-   window.location.href = shareUrl;
+  window.open(shareUrl, '_blank', 'noopener,noreferrer');
 });
 </script>
 </body>
