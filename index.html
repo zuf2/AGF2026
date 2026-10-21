@@ -312,13 +312,14 @@ async function saveImage(){
 }
 document.getElementById('saveImage').addEventListener('click',saveImage);
 document.getElementById('sharePage').addEventListener('click',()=>{
-  const text = document.title;
-  const url = location.href;
-  const shareUrl = 'https://twitter.com/intent/tweet?text='
-    + encodeURIComponent(text)
-    + '&url=' + encodeURIComponent(url);
+   const text = document.title;
+   const url = location.href;
+   const shareUrl = 'https://twitter.com/intent/tweet?text='
+     + encodeURIComponent(text)
+     + '&url=' + encodeURIComponent(url);
 
-  window.open(shareUrl, '_blank', 'noopener,noreferrer');
+   // ポップアップブロックを避けるため、同じタブでXの投稿画面を開く
+   window.location.href = shareUrl;
 });
 </script>
 </body>
