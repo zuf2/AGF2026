@@ -117,11 +117,11 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:20px 8px 28
   </div>
 
   <section class="panel">
-    <h2>■ AGF2026 限定商品 ■ <span class="tag">※アフターでも販売予定</span></h2>
+    <h2>■ AGF2026 限定商品 ■ <span class="tag">※アフターでも販売予定</span><span class="tag">購入制限：各種3個まで</span></h2>
     <div class="product-list" id="limited"></div>
   </section>
   <section class="panel">
-    <h2>■ オープン商品 ■</h2>
+    <h2>■ オープン商品 ■ <span class="tag">購入制限：各種3個まで</span></h2>
     <div class="product-list" id="open"></div>
   </section>
   <section class="panel">
@@ -172,7 +172,7 @@ const products = [
  {id:'t4',group:'trading',name:'【K】ダイヤ型アクリルブロック',price:900,box:9000,limit:3,boxLabel:'10種 BOX',code:'K'},
  {id:'t5',group:'trading',name:'【L】ミニアクリルブロックコレクション',price:800,box:9600,limit:3,boxLabel:'12種 BOX',code:'L'}
 ];
-const characters = ['八雲','エドモンド','オリビン','ケシー','玖夜','ガル','ブレイド','エンテン','レイ','リン','エスター','モルフィス','トパ','親父'];
+const characters = ['八雲','エドモンド','オリビン','ケシー','玖夜','ガル','ぶれいど','エンテン','レイ','リン','エスター','モルフィス','トパ','親父'];
 const qty = {};
 products.forEach(p=>{
   if(p.group==='trading'){qty[p.id+'-single']=0;qty[p.id+'-box']=0;}
@@ -226,7 +226,7 @@ products.forEach(p=>{
    const card=document.createElement('div');card.className='product';card.style.display='block';
    const top=document.createElement('div');top.style.display='flex';top.style.alignItems='flex-start';top.style.justifyContent='space-between';top.style.gap='10px';
    const info=document.createElement('div');
-   info.innerHTML=`<div class="product-name">${p.name}</div><span class="price">${yen(p.price)}／個</span><span class="product-meta">購入制限：各種3個まで</span>`;
+info.innerHTML=`<div class="product-name">${p.name}</div><span class="price">${yen(p.price)}／個</span>`;
    const picker=document.createElement('div');picker.className='character-picker';
    const toggle=document.createElement('button');toggle.type='button';toggle.className='character-toggle';toggle.textContent='キャラ別に選択 ▾';
    toggle.setAttribute('aria-expanded','false');
